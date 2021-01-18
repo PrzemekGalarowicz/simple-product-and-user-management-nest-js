@@ -11,10 +11,10 @@ export interface ExternalUserAddressDto {
 
 export interface ExternalUserDto {
   id: string,
-  name: string;
-  surname: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  birthday: Array<number>;
+  birthday: string;
   address?: Array<IUserAddress>;
-  roles: Roles;
+  role: Roles;
 }

@@ -21,7 +21,7 @@ export class ProductsDataService {
   }
 
   addProduct(newProduct: CreateProductDto): IProduct {
-    const date = new Date()
+    const date = new Date().toISOString()
     const product = {
       ...newProduct,
       id: uuidv4(),
@@ -41,7 +41,7 @@ export class ProductsDataService {
       price: dto.price,
       count: dto.count,
       tags: dto.tags,
-      updatedAt: new Date()
+      updatedAt: new Date().toISOString()
     }
     this.products[productIndex] = updatedProduct
     return updatedProduct

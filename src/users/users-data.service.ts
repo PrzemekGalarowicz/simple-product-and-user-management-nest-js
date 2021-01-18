@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { IUser } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { arrayToDate } from '../shared/helpers/date.helper';
 
 @Injectable()
 export class UsersDataService {
@@ -32,12 +31,12 @@ export class UsersDataService {
     const currentUser = this.getUserById(id)
     const updatedUser = {
       ...currentUser,
-      name: dto.name,
-      surname: dto.surname,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
       email: dto.email,
-      birthday: arrayToDate(dto.birthday),
+      birthday: dto.birthday,
       address: dto.address,
-      roles: dto.roles
+      role: dto.role
     }
     this.users[userIndex] = updatedUser
     return updatedUser

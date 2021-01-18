@@ -4,16 +4,16 @@ export interface IUserAddress {
   country: string;
   city: string;
   street: string;
-  houseNumber: string;
-  apartmentNumber?: string;
+  houseNumber: number;
+  apartmentNumber?: number;
 }
 
 export interface IUser {
   id: string;
-  name: string;
-  surname: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  birthday: Date;
+  birthday: string;
   address?: Array<IUserAddress>;
-  roles: Roles;
+  role: Roles;
 }

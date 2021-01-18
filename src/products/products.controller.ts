@@ -1,10 +1,8 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode } from '@nestjs/common';
-import { IProduct } from './interfaces/product.interface';
+import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode, ParseUUIDPipe } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ExternalProductDto } from './dto/external-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsDataService } from './products-data.service';
-import { dateToArray } from '../shared/helpers/date.helper';
 
 @Controller('products')
 export class ProductsController {
@@ -14,41 +12,27 @@ export class ProductsController {
 
   @Get()
   getAllProducts(): Array<ExternalProductDto> {
-    return this.productRepository.getAllProducts().map(product => this.mapProductToExternal(product));
+    return this.productRepository.getAllProducts();
   }
 
   @Get(':id')
-  getProductById(@Param('id') _id_: string): ExternalProductDto {
-    return this.mapProductToExternal(
-      this.productRepository.getProductById(_id_)
-    );
+  getProductById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): ExternalProductDto {
+    return this.productRepository.getProductById(id)
   }
 
   @Post()
   addProduct(@Body() product: CreateProductDto): ExternalProductDto {
-    return this.mapProductToExternal(
-      this.productRepository.addProduct(product)
-    );
+    return this.productRepository.addProduct(product)
   }
 
   @Put(':id')
-  updateProduct(@Param('id') _id_: string, @Body() updatedProduct: UpdateProductDto): ExternalProductDto {
-    return this.mapProductToExternal(
-      this.productRepository.updateProduct(_id_, updatedProduct)
-    );
+  updateProduct(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updatedProduct: UpdateProductDto): ExternalProductDto {
+    return this.productRepository.updateProduct(id, updatedProduct)
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteProduct(@Param('id') _id_: string): void {
-    this.productRepository.deleteProduct(_id_);
-  }
-
-  mapProductToExternal(product: IProduct): ExternalProductDto {
-    return {
-      ...product,
-      createdAt: dateToArray(product.createdAt),
-      updatedAt: dateToArray(product.updatedAt),
-    };
+  deleteProduct(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): void {
+    this.productRepository.deleteProduct(id);
   }
 }

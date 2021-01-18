@@ -6,6 +6,6 @@ export interface IProduct {
   price: number;
   count: number;
   tags: Array<Tags>;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

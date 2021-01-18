@@ -1,10 +1,8 @@
-import { Controller, Get, Post, Put, Delete, HttpCode, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, HttpCode, Param, Body, ParseUUIDPipe } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ExternalUserDto } from './dto/external-user.dto';
-import { IUser } from './interfaces/user.interface';
 import { UsersDataService } from './users-data.service';
-import { dateToArray } from '../shared/helpers/date.helper';
 
 @Controller('users')
 export class UsersController {
@@ -14,40 +12,27 @@ export class UsersController {
 
   @Get()
   getAllUsers(): Array<ExternalUserDto> {
-    return this.userRepository.getAllUsers().map(user => this.mapUserToExternal(user))
+    return this.userRepository.getAllUsers()
   }
 
   @Get(':id')
-  getUserById(@Param('id') _id_: string): ExternalUserDto {
-    return this.mapUserToExternal(
-      this.userRepository.getUserById(_id_)
-    );
+  getUserById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): ExternalUserDto {
+    return this.userRepository.getUserById(id)
   }
 
   @Post()
   addUser(@Body() user: CreateUserDto): ExternalUserDto {
-    return this.mapUserToExternal(
-      this.userRepository.addUser(user)
-    )
+    return this.userRepository.addUser(user)
   }
 
   @Put(':id')
-  updateUser(@Param('id') _id_: string, @Body() updatedUser: UpdateUserDto): ExternalUserDto {
-    return this.mapUserToExternal(
-      this.userRepository.updateUser(_id_, updatedUser)
-    );
+  updateUser(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updatedUser: UpdateUserDto): ExternalUserDto {
+    return this.userRepository.updateUser(id, updatedUser)
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(@Param('id') _id_: string): void {
-    this.userRepository.deleteUser(_id_);
-  }
-
-  mapUserToExternal(user: IUser): ExternalUserDto {
-    return {
-      ...user,
-      birthday: dateToArray(user.birthday)
-    };
+  deleteUser(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): void {
+    this.userRepository.deleteUser(id);
   }
 }

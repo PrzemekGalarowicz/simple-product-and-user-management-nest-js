@@ -6,6 +6,6 @@ export interface ExternalProductDto {
   price: number;
   count: number;
   tags: Array<Tags>;
-  createdAt: Array<number>;
-  updatedAt: Array<number>;
+  createdAt: string;
+  updatedAt: string;
 }

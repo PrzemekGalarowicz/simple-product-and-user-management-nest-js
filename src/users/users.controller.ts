@@ -3,10 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ExternalUserDto } from './dto/external-user.dto';
 import { UsersDataService } from './users-data.service';
+import { UserValidatorService } from './user-validator.service'
 
 @Controller('users')
 export class UsersController {
-  constructor(private userRepository: UsersDataService) {
+  constructor(private userRepository: UsersDataService, private userValidator: UserValidatorService) {
 
   }
 
@@ -22,6 +23,7 @@ export class UsersController {
 
   @Post()
   addUser(@Body() user: CreateUserDto): ExternalUserDto {
+    this.userValidator.validateUniqueEmail(user.email)
     return this.userRepository.addUser(user)
   }
 

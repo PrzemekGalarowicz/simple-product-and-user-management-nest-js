@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ExternalProductDto } from './dto/external-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsDataService } from './products-data.service';
+import { RoleGuard } from '../shared/guards/role.guard'
 
 @Controller('products')
 export class ProductsController {
@@ -21,6 +22,7 @@ export class ProductsController {
   }
 
   @Post()
+  @UseGuards(RoleGuard)
   addProduct(@Body() product: CreateProductDto): ExternalProductDto {
     return this.productRepository.addProduct(product)
   }

@@ -17,7 +17,11 @@ export class UsersDataService {
   }
 
   getUserByIndex(id: string): number {
-    return this.users.findIndex(product => product.id === id)
+    return this.users.findIndex(user => user.id === id)
+  }
+
+  getUserByEmail(email: string): IUser {
+    return this.users.find(user => user.email === email)
   }
 
   addUser(newUser: CreateUserDto): IUser {

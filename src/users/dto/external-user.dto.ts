@@ -10,7 +10,7 @@ export interface ExternalUserAddressDto {
 }
 
 export interface ExternalUserDto {
-  id: string,
+  id: string;
   firstName: string;
   lastName: string;
   email: string;

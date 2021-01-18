@@ -1,5 +1,14 @@
 import { Tags } from '../enums/tags.enum';
-import { IsNumber, IsEnum, MinLength, MaxLength, Min, IsInt, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsNumber,
+  IsEnum,
+  MinLength,
+  MaxLength,
+  Min,
+  IsInt,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 
 export class UpdateProductDto {
   @MinLength(1)

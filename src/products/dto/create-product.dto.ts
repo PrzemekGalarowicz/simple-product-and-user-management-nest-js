@@ -1,11 +1,20 @@
 import { Tags } from '../enums/tags.enum';
-import { IsNumber, IsEnum, MinLength, MaxLength, Min, IsInt, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsNumber,
+  IsEnum,
+  MinLength,
+  MaxLength,
+  Min,
+  IsInt,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateProductDto {
   @MinLength(1)
   @MaxLength(25)
   name: string;
-  
+
   @IsNumber()
   @Min(0)
   price: number;

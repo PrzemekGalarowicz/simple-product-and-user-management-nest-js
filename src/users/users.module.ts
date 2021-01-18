@@ -5,6 +5,6 @@ import { UserValidatorService } from './user-validator.service';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersDataService, UserValidatorService]
+  providers: [UsersDataService, UserValidatorService],
 })
 export class UsersModule {}

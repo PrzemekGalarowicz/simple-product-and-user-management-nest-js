@@ -1,15 +1,24 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, HttpCode, ParseUUIDPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Put,
+  Delete,
+  HttpCode,
+  ParseUUIDPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ExternalProductDto } from './dto/external-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsDataService } from './products-data.service';
-import { RoleGuard } from '../shared/guards/role.guard'
+import { RoleGuard } from '../shared/guards/role.guard';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private productRepository: ProductsDataService) {
-
-  }
+  constructor(private productRepository: ProductsDataService) {}
 
   @Get()
   getAllProducts(): Array<ExternalProductDto> {
@@ -17,24 +26,31 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getProductById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): ExternalProductDto {
-    return this.productRepository.getProductById(id)
+  getProductById(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): ExternalProductDto {
+    return this.productRepository.getProductById(id);
   }
 
   @Post()
   @UseGuards(RoleGuard)
   addProduct(@Body() product: CreateProductDto): ExternalProductDto {
-    return this.productRepository.addProduct(product)
+    return this.productRepository.addProduct(product);
   }
 
   @Put(':id')
-  updateProduct(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updatedProduct: UpdateProductDto): ExternalProductDto {
-    return this.productRepository.updateProduct(id, updatedProduct)
+  updateProduct(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() updatedProduct: UpdateProductDto,
+  ): ExternalProductDto {
+    return this.productRepository.updateProduct(id, updatedProduct);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteProduct(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): void {
+  deleteProduct(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): void {
     this.productRepository.deleteProduct(id);
   }
 }

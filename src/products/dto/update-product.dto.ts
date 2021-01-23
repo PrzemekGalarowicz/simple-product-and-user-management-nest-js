@@ -15,6 +15,10 @@ export class UpdateProductDto {
   @MaxLength(25)
   name: string;
 
+  @MinLength(1)
+  @MaxLength(500)
+  description: string;
+
   @IsNumber()
   @Min(0)
   price: number;

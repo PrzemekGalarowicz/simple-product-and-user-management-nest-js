@@ -37,7 +37,7 @@ export class UsersController {
   @Post()
   async addUser(@Body() user: CreateUserDto): Promise<ExternalUserDto> {
     await this.userValidator.validateUniqueEmail(user.email);
-    return await this.userRepository.addUser(user);
+    return await this.userRepository.addUser(user)
   }
 
   @Put(':id')

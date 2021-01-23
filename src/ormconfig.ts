@@ -1,4 +1,6 @@
-export const config = {
+import { ConnectionOptions } from 'typeorm';
+
+export const config: ConnectionOptions = {
   type: 'mysql',
   host: 'localhost',
   port: 3306,
@@ -6,5 +8,12 @@ export const config = {
   password: 'root',
   database: 'kodilla_shop',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: true
+  synchronize: true,
+  dropSchema: true,
+  migrationsRun: true,
+  migrations: [__dirname + '/db/migrations/**/*{.ts,.js}'],
+  cli: {
+    migrationsDir: 'src/db/migrations',
+  },
+  subscribers: [__dirname + '/db/subscribers/**/*{.ts,.js}'],
 }

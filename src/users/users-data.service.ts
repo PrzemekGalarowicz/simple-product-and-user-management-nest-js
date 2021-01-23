@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Connection, EntityManager } from 'typeorm';
 import { User } from './db/users.entity';
 import { UserAddress } from './db/user-address.entity';
 import { CreateUserDto, CreateUserAddressDto } from './dto/create-user.dto';
@@ -10,7 +11,8 @@ import { UserAddressRepository } from './db/user-address.repository';
 export class UsersDataService {
   constructor(
     private userRepository: UserRepository,
-    private userAddressRepository: UserAddressRepository
+    private userAddressRepository: UserAddressRepository,
+    private connection: Connection
   ) { }
 
   getAllUsers(): Promise<User[]> {
@@ -21,8 +23,9 @@ export class UsersDataService {
     return this.userRepository.findOne(id);
   }
 
-  async prepareUserAddressesToSave(address: CreateUserAddressDto[] | UpdateUserAddressDto[]): Promise<UserAddress[]> {
+  async prepareUserAddressesToSave(address: CreateUserAddressDto[] | UpdateUserAddressDto[], userAddressRepository: UserAddressRepository): Promise<UserAddress[]> {
     const addresses: UserAddress[] = [];
+
     for (const add of address) {
       const addressToSave = new UserAddress();
 
@@ -31,40 +34,43 @@ export class UsersDataService {
       addressToSave.street = add.street;
       addressToSave.number = add.number;
 
-      addresses.push(await this.userAddressRepository.save(addressToSave));
+      addresses.push(await userAddressRepository.save(addressToSave));
     }
 
     return addresses;
   }
 
-  async addUser(item: CreateUserDto): Promise<User> {
-    const userToSave = new User();
+  async addUser(user: CreateUserDto): Promise<User> {
+    return this.connection.transaction(async (manager: EntityManager) => {
+      const userToSave = new User();
 
-    userToSave.firstName = item.firstName
-    userToSave.lastName = item.lastName
-    userToSave.email = item.email
-    userToSave.birthday = item.birthday
-    userToSave.role = item.role
-    userToSave.address = await this.prepareUserAddressesToSave(item.address);
+      userToSave.firstName = user.firstName;
+      userToSave.lastName = user.lastName;
+      userToSave.email = user.email;
+      userToSave.role = user.role;
+      userToSave.birthday = user.birthday;
 
-    return this.userRepository.save(userToSave);
+      userToSave.address = await this.prepareUserAddressesToSave(user.address, manager.getCustomRepository(UserAddressRepository));
+
+      return await manager.getCustomRepository(UserRepository).save(userToSave);
+    });
   }
 
   async updateUser(id: string, item: UpdateUserDto): Promise<User> {
-    const userToUpdate = await this.getUserById(id);
+    return this.connection.transaction(async (manager: EntityManager) => {
+      const userToUpdate = await this.getUserById(id);
 
-    userToUpdate.firstName = item.firstName
-    userToUpdate.lastName = item.lastName
-    userToUpdate.email = item.email
-    userToUpdate.birthday = item.birthday
-    userToUpdate.role = item.role
-    userToUpdate.address = await this.prepareUserAddressesToSave(item.address);
+      userToUpdate.firstName = item.firstName
+      userToUpdate.lastName = item.lastName
+      userToUpdate.email = item.email
+      userToUpdate.birthday = item.birthday
+      userToUpdate.role = item.role
+      userToUpdate.address = await this.prepareUserAddressesToSave(item.address, manager.getCustomRepository(UserAddressRepository));
 
-    await this.userAddressRepository.deleteUserAddressesByUserId(id)
+      await this.userAddressRepository.deleteUserAddressesByUserId(id)
 
-    await this.userRepository.save(userToUpdate);
-
-    return await this.getUserById(id);
+      return await await manager.getCustomRepository(UserRepository).save(userToUpdate);
+    });
   }
 
   async deleteUser(id: string): Promise<void> {

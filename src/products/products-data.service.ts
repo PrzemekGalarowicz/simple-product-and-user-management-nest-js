@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Connection, EntityManager } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from './db/products.repository'
@@ -10,7 +11,8 @@ import { Tag } from './db/tag.entity'
 export class ProductsDataService {
   constructor(
     private productRepository: ProductRepository,
-    private tagRepository: TagRepository
+    private tagRepository: TagRepository,
+    private connection: Connection
   ) { }
 
   getAllProducts(): Promise<Product[]> {
@@ -22,29 +24,29 @@ export class ProductsDataService {
   }
 
   async addProduct(item: CreateProductDto): Promise<Product> {
-    const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);
-    const productToSave = new Product();
+    return this.connection.transaction(async (manager: EntityManager) => {
+      const productToSave = new Product();
 
-    productToSave.name = item.name;
-    productToSave.price = item.price;
-    productToSave.count = item.count;
-    productToSave.tags = tags;
+      productToSave.name = item.name;
+      productToSave.price = item.price;
+      productToSave.count = item.count;
+      productToSave.tags = await manager.getCustomRepository(TagRepository).findTagsByName(item.tags);
 
-    return this.productRepository.save(productToSave);
+      return await manager.getCustomRepository(ProductRepository).save(productToSave);
+    });
   }
 
   async updateProduct(id: string, item: UpdateProductDto): Promise<Product> {
-    const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);
-    const productToUpdate = await this.getProductById(id);
+    return this.connection.transaction(async (manager: EntityManager) => {
+      const productToSave = await this.getProductById(id);
 
-    productToUpdate.name = item.name;
-    productToUpdate.price = item.price;
-    productToUpdate.count = item.count;
-    productToUpdate.tags = tags;
+      productToSave.name = item.name;
+      productToSave.price = item.price;
+      productToSave.count = item.count;
+      productToSave.tags = await manager.getCustomRepository(TagRepository).findTagsByName(item.tags);
 
-    await this.productRepository.save(productToUpdate);
-
-    return await this.getProductById(id);
+      return await manager.getCustomRepository(ProductRepository).save(productToSave);
+    });
   }
 
   async deleteProduct(id: string): Promise<void> {

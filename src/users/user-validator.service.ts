@@ -7,8 +7,8 @@ export class UserValidatorService {
   constructor(private userRepository: UserRepository) {}
 
   async validateUniqueEmail(email: string): Promise<void> {
-    const isUserExist = await this.userRepository.getUserByEmail(email);
-    if (!!isUserExist) {
+    const isUserExist = await (await this.userRepository.getUserByEmail(email)).length;
+    if (isUserExist) {
       throw new UserRequireUniqueEmailException();
     }
   }

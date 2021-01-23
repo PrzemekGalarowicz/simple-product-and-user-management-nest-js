@@ -1,52 +1,73 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { IUser } from './interfaces/user.interface';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './db/users.entity';
+import { UserAddress } from './db/user-address.entity';
+import { CreateUserDto, CreateUserAddressDto } from './dto/create-user.dto';
+import { UpdateUserDto, UpdateUserAddressDto } from './dto/update-user.dto';
+import { UserRepository } from './db/user.repository';
+import { UserAddressRepository } from './db/user-address.repository';
 
 @Injectable()
 export class UsersDataService {
-  private users: Array<IUser> = [];
+  constructor(
+    private userRepository: UserRepository,
+    private userAddressRepository: UserAddressRepository
+  ) { }
 
-  getAllUsers(): Array<IUser> {
-    return this.users;
+  getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
-  getUserById(id: string): IUser {
-    return this.users.find((user) => user.id === id);
+  getUserById(id: string): Promise<User> {
+    return this.userRepository.findOne(id);
   }
 
-  getUserByIndex(id: string): number {
-    return this.users.findIndex((user) => user.id === id);
+  async prepareUserAddressesToSave(address: CreateUserAddressDto[] | UpdateUserAddressDto[]): Promise<UserAddress[]> {
+    const addresses: UserAddress[] = [];
+    for (const add of address) {
+      const addressToSave = new UserAddress();
+
+      addressToSave.country = add.country;
+      addressToSave.city = add.city;
+      addressToSave.street = add.street;
+      addressToSave.number = add.number;
+
+      addresses.push(await this.userAddressRepository.save(addressToSave));
+    }
+
+    return addresses;
   }
 
-  getUserByEmail(email: string): IUser {
-    return this.users.find((user) => user.email === email);
+  async addUser(item: CreateUserDto): Promise<User> {
+    const userToSave = new User();
+
+    userToSave.firstName = item.firstName
+    userToSave.lastName = item.lastName
+    userToSave.email = item.email
+    userToSave.birthday = item.birthday
+    userToSave.role = item.role
+    userToSave.address = await this.prepareUserAddressesToSave(item.address);
+
+    return this.userRepository.save(userToSave);
   }
 
-  addUser(newUser: CreateUserDto): IUser {
-    const user = { id: uuidv4(), ...newUser };
-    this.users.push(user);
-    return user;
+  async updateUser(id: string, item: UpdateUserDto): Promise<User> {
+    const userToUpdate = await this.getUserById(id);
+
+    userToUpdate.firstName = item.firstName
+    userToUpdate.lastName = item.lastName
+    userToUpdate.email = item.email
+    userToUpdate.birthday = item.birthday
+    userToUpdate.role = item.role
+    userToUpdate.address = await this.prepareUserAddressesToSave(item.address);
+
+    await this.userAddressRepository.deleteUserAddressesByUserId(id)
+
+    await this.userRepository.save(userToUpdate);
+
+    return await this.getUserById(id);
   }
 
-  updateUser(id: string, dto: UpdateUserDto): IUser {
-    const userIndex = this.getUserByIndex(id);
-    const currentUser = this.getUserById(id);
-    const updatedUser = {
-      ...currentUser,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      birthday: dto.birthday,
-      address: dto.address,
-      role: dto.role,
-    };
-    this.users[userIndex] = updatedUser;
-    return updatedUser;
-  }
-
-  deleteUser(id: string): void {
-    this.users = this.users.filter((user) => user.id !== id);
+  async deleteUser(id: string): Promise<void> {
+    this.userRepository.delete(id);
   }
 }

@@ -23,36 +23,36 @@ export class UsersController {
   ) {}
 
   @Get()
-  getAllUsers(): Array<ExternalUserDto> {
-    return this.userRepository.getAllUsers();
+  async getAllUsers(): Promise<ExternalUserDto[]> {
+    return await this.userRepository.getAllUsers()
   }
 
   @Get(':id')
-  getUserById(
+  async getUserById(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): ExternalUserDto {
-    return this.userRepository.getUserById(id);
+  ): Promise<ExternalUserDto> {
+    return await this.userRepository.getUserById(id);
   }
 
   @Post()
-  addUser(@Body() user: CreateUserDto): ExternalUserDto {
-    this.userValidator.validateUniqueEmail(user.email);
-    return this.userRepository.addUser(user);
+  async addUser(@Body() user: CreateUserDto): Promise<ExternalUserDto> {
+    await this.userValidator.validateUniqueEmail(user.email);
+    return await this.userRepository.addUser(user);
   }
 
   @Put(':id')
-  updateUser(
+  async updateUser(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updatedUser: UpdateUserDto,
-  ): ExternalUserDto {
-    return this.userRepository.updateUser(id, updatedUser);
+  ): Promise<ExternalUserDto> {
+    return await this.userRepository.updateUser(id, updatedUser);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(
+  async deleteUser(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): void {
-    this.userRepository.deleteUser(id);
+  ): Promise<void> {
+    await this.userRepository.deleteUser(id);
   }
 }

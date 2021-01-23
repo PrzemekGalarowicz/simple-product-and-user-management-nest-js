@@ -20,10 +20,7 @@ export class CreateUserAddressDto {
 
   @IsNotEmpty()
   @IsNumber()
-  houseNumber: number;
-
-  @IsNumber()
-  apartmentNumber?: number;
+  number: number;
 }
 
 export class CreateUserDto {

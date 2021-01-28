@@ -12,8 +12,8 @@ export class UsersDataService {
   constructor(
     private userRepository: UserRepository,
     private userAddressRepository: UserAddressRepository,
-    private connection: Connection
-  ) { }
+    private connection: Connection,
+  ) {}
 
   getAllUsers(): Promise<User[]> {
     return this.userRepository.find();
@@ -23,7 +23,10 @@ export class UsersDataService {
     return this.userRepository.findOne(id);
   }
 
-  async prepareUserAddressesToSave(address: CreateUserAddressDto[] | UpdateUserAddressDto[], userAddressRepository: UserAddressRepository): Promise<UserAddress[]> {
+  async prepareUserAddressesToSave(
+    address: CreateUserAddressDto[] | UpdateUserAddressDto[],
+    userAddressRepository: UserAddressRepository,
+  ): Promise<UserAddress[]> {
     const addresses: UserAddress[] = [];
 
     for (const add of address) {
@@ -50,7 +53,10 @@ export class UsersDataService {
       userToSave.role = user.role;
       userToSave.birthday = user.birthday;
 
-      userToSave.address = await this.prepareUserAddressesToSave(user.address, manager.getCustomRepository(UserAddressRepository));
+      userToSave.address = await this.prepareUserAddressesToSave(
+        user.address,
+        manager.getCustomRepository(UserAddressRepository),
+      );
 
       return await manager.getCustomRepository(UserRepository).save(userToSave);
     });
@@ -60,16 +66,21 @@ export class UsersDataService {
     return this.connection.transaction(async (manager: EntityManager) => {
       const userToUpdate = await this.getUserById(id);
 
-      userToUpdate.firstName = item.firstName
-      userToUpdate.lastName = item.lastName
-      userToUpdate.email = item.email
-      userToUpdate.birthday = item.birthday
-      userToUpdate.role = item.role
-      userToUpdate.address = await this.prepareUserAddressesToSave(item.address, manager.getCustomRepository(UserAddressRepository));
+      userToUpdate.firstName = item.firstName;
+      userToUpdate.lastName = item.lastName;
+      userToUpdate.email = item.email;
+      userToUpdate.birthday = item.birthday;
+      userToUpdate.role = item.role;
+      userToUpdate.address = await this.prepareUserAddressesToSave(
+        item.address,
+        manager.getCustomRepository(UserAddressRepository),
+      );
 
-      await this.userAddressRepository.deleteUserAddressesByUserId(id)
+      await this.userAddressRepository.deleteUserAddressesByUserId(id);
 
-      return await await manager.getCustomRepository(UserRepository).save(userToUpdate);
+      return await await manager
+        .getCustomRepository(UserRepository)
+        .save(userToUpdate);
     });
   }
 

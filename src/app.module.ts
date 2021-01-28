@@ -10,13 +10,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
+import { OrdersModule } from './orders/orders.module';
 
 import * as cors from 'cors';
 
-import { config } from './ormconfig';
+import config from './ormconfig';
 
 @Module({
-  imports: [ProductsModule, UsersModule, TypeOrmModule.forRoot(config as ConnectionOptions)],
+  imports: [
+    ProductsModule,
+    UsersModule,
+    OrdersModule,
+    TypeOrmModule.forRoot(config as ConnectionOptions)
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

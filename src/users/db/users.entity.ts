@@ -3,7 +3,7 @@ import { UserAddress } from './user-address.entity';
 import { Roles } from '../../shared/enums/roles.enum';
 
 @Entity({
-  name: 'users'
+  name: 'users',
 })
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -21,11 +21,11 @@ export class User {
   @Column({ length: 24 })
   birthday: string;
 
-  @OneToMany(type => UserAddress, address => address.user)
+  @OneToMany((type) => UserAddress, (address) => address.user)
   address?: UserAddress[];
 
   @Column('enum', {
-    enum: Roles
+    enum: Roles,
   })
   role: Roles;
 }

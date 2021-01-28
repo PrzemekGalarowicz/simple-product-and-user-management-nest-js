@@ -2,18 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { Connection, EntityManager } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductRepository } from './db/products.repository'
-import { TagRepository } from './db/tag.repository'
-import { Product } from './db/products.entity'
-import { Tag } from './db/tag.entity'
+import { ProductRepository } from './db/products.repository';
+import { TagRepository } from './db/tag.repository';
+import { Product } from './db/products.entity';
 
 @Injectable()
 export class ProductsDataService {
   constructor(
     private productRepository: ProductRepository,
     private tagRepository: TagRepository,
-    private connection: Connection
-  ) { }
+    private connection: Connection,
+  ) {}
 
   getAllProducts(): Promise<Product[]> {
     return this.productRepository.find();
@@ -30,9 +29,13 @@ export class ProductsDataService {
       productToSave.name = item.name;
       productToSave.price = item.price;
       productToSave.count = item.count;
-      productToSave.tags = await manager.getCustomRepository(TagRepository).findTagsByName(item.tags);
+      productToSave.tags = await manager
+        .getCustomRepository(TagRepository)
+        .findTagsByName(item.tags);
 
-      return await manager.getCustomRepository(ProductRepository).save(productToSave);
+      return await manager
+        .getCustomRepository(ProductRepository)
+        .save(productToSave);
     });
   }
 
@@ -43,9 +46,13 @@ export class ProductsDataService {
       productToSave.name = item.name;
       productToSave.price = item.price;
       productToSave.count = item.count;
-      productToSave.tags = await manager.getCustomRepository(TagRepository).findTagsByName(item.tags);
+      productToSave.tags = await manager
+        .getCustomRepository(TagRepository)
+        .findTagsByName(item.tags);
 
-      return await manager.getCustomRepository(ProductRepository).save(productToSave);
+      return await manager
+        .getCustomRepository(ProductRepository)
+        .save(productToSave);
     });
   }
 

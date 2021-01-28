@@ -7,7 +7,10 @@ import { UserRepository } from './db/user.repository';
 import { UserAddressRepository } from './db/user-address.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRepository]), TypeOrmModule.forFeature([UserAddressRepository])],
+  imports: [
+    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([UserAddressRepository]),
+  ],
   controllers: [UsersController],
   providers: [UsersDataService, UserValidatorService],
 })

@@ -6,8 +6,8 @@ export class UserAddressRepository extends Repository<UserAddress> {
   async deleteUserAddressesByUserId(id: string): Promise<void> {
     const usersAddresses = await this.find({
       where: {
-        id
-      }
+        id,
+      },
     });
 
     this.remove(usersAddresses);

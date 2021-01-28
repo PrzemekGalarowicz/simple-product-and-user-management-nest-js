@@ -15,7 +15,7 @@ import { ExternalProductDto } from './dto/external-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsDataService } from './products-data.service';
 import { RoleGuard } from '../shared/guards/role.guard';
-import { Product } from './db/products.entity'
+import { Product } from './db/products.entity';
 
 @Controller('products')
 export class ProductsController {
@@ -23,8 +23,8 @@ export class ProductsController {
 
   @Get()
   async getAllProducts(): Promise<ExternalProductDto[]> {
-    const products = await this.productRepository.getAllProducts()
-    return products.map(product => this.mapProductToExternal(product))
+    const products = await this.productRepository.getAllProducts();
+    return products.map((product) => this.mapProductToExternal(product));
   }
 
   @Get(':id')
@@ -32,15 +32,17 @@ export class ProductsController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<ExternalProductDto> {
     return this.mapProductToExternal(
-      await this.productRepository.getProductById(id)
+      await this.productRepository.getProductById(id),
     );
   }
 
   @Post()
   @UseGuards(RoleGuard)
-  async addProduct(@Body() product: CreateProductDto): Promise<ExternalProductDto> {
+  async addProduct(
+    @Body() product: CreateProductDto,
+  ): Promise<ExternalProductDto> {
     return this.mapProductToExternal(
-      await this.productRepository.addProduct(product)
+      await this.productRepository.addProduct(product),
     );
   }
 
@@ -50,7 +52,7 @@ export class ProductsController {
     @Body() updatedProduct: UpdateProductDto,
   ): Promise<ExternalProductDto> {
     return this.mapProductToExternal(
-      await this.productRepository.updateProduct(id, updatedProduct)
+      await this.productRepository.updateProduct(id, updatedProduct),
     );
   }
 
@@ -67,7 +69,7 @@ export class ProductsController {
       ...product,
       createdAt: new Date(product.createdAt).toISOString(),
       updatedAt: new Date(product.updatedAt).toISOString(),
-      tags: product.tags?.map(i => i.name)
+      tags: product.tags?.map((i) => i.name),
     };
   }
 }

@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from './users.entity';
 
 @Entity({
-  name: 'user_addresses'
+  name: 'user_addresses',
 })
 export class UserAddress {
   @PrimaryGeneratedColumn('uuid')
@@ -18,11 +18,11 @@ export class UserAddress {
   street: string;
 
   @Column({
-    type: 'int'
+    type: 'int',
   })
   number: number;
 
-  @ManyToOne(type => User, user => user.id, {
+  @ManyToOne((type) => User, (user) => user.id, {
     onDelete: 'CASCADE',
   })
   user: User;

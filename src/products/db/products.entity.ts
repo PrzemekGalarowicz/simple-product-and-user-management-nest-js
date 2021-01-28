@@ -1,8 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Tag } from './tag.entity';
 
 @Entity({
-  name: 'products'
+  name: 'products',
 })
 export class Product {
   @PrimaryGeneratedColumn('uuid')
@@ -13,30 +21,30 @@ export class Product {
 
   @Column({
     type: 'text',
-    nullable: true
+    nullable: true,
   })
   description: string;
 
   @Column({
     default: 0,
-    type: 'float'
+    type: 'float',
   })
   price: number;
 
   @Column({
-    default: 1
+    default: 1,
   })
   count: number;
 
-  @ManyToMany(type => Tag)
+  @ManyToMany((type) => Tag)
   @JoinTable({
     name: 'products_tags',
     joinColumn: {
-      name: 'productId'
+      name: 'productId',
     },
     inverseJoinColumn: {
-      name: 'tagId'
-    }
+      name: 'tagId',
+    },
   })
   tags: Tag[];
 

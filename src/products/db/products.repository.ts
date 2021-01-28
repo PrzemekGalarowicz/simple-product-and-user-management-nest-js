@@ -2,4 +2,8 @@ import { EntityRepository, Repository } from 'typeorm';
 import { Product } from './products.entity';
 
 @EntityRepository(Product)
-export class ProductRepository extends Repository<Product> { }
+export class ProductRepository extends Repository<Product> {
+  getProductsByIds(ids: any[]): Promise<Product[]> {
+    return this.findByIds(ids);
+  }
+}
